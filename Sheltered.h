@@ -31,6 +31,7 @@ Sheltered::Sheltered(){}
 Sheltered::~Sheltered(){}
 
 string Sheltered::getResponsible() { return responsible; }
+
 void Sheltered::setResponsible(string r) {
     if (getAge() < 18) responsible = r;
     else responsible = "N/A";
