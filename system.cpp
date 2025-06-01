@@ -15,8 +15,8 @@ using namespace std;
 #define MAX_PW_SZ       20
 #define MAX_DISEASES    100
 #define MAX_ALLERGIES   100
-#define ADM_RGSTR_FILE  "./register/adm.txt"
-#define RGSTR_FILE      "./register/shelter.txt"
+#define ADM_RGSTR_FILE  "./adm.txt"
+#define RGSTR_FILE      "./shelter.txt"
 
 enum t_gender { MALE, FEMALE, GENDERS };
 enum t_bday { DAY, MONTH, YEAR, DATES };
