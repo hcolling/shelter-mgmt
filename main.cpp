@@ -1,7 +1,10 @@
 #include "System.h"
 
+using namespace std;
+
 int main() {
     int opcao;
+    System execute;
     do {
         cout << "\n==== MENU PRINCIPAL ====\n";
         cout << "1. Cadastrar novo abrigado\n";
@@ -15,15 +18,15 @@ int main() {
         cin.ignore();
 
         switch (opcao) {
-            case 1: cadastrarNovoAbr(); break;
-            case 2: cadastrarNovoAdm(); break;
-            case 3: exibirCadastrados(); break;
-            case 4: menuBusca(); break;
+            case 1: execute.cadastrarNovoAbr(); break;
+            case 2: execute.cadastrarNovoAdm(); break;
+            case 3: execute.exibirCadastrados(); break;
+            case 4: execute.menuBusca(); break;
             case 5: {
                 int tipo;
                 cout << "Editar cadastro de:\n1. Administrador\n2. Abrigado\n> ";
                 cin >> tipo; cin.ignore();
-                editarCadastro(tipo == 1);
+                execute.editarCadastro(tipo == 1);
                 break;
             }
             case 6: {
@@ -33,7 +36,7 @@ int main() {
                 cin >> tipo; cin.ignore();
                 cout << "Tem certeza que deseja excluir? (s para confirmar): ";
                 getline(cin, confirm);
-                if (confirm == "s") excluirCadastro(tipo == 1);
+                if (confirm == "s") execute.excluirCadastro(tipo == 1);
                 else cout << "Operacao cancelada.\n";
                 break;
             }

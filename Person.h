@@ -3,6 +3,8 @@
 #include <iostream>
 #include <string>
 
+using namespace std;
+
 #define MAX_NAME_SZ     100
 #define MAX_NATION_SZ   100
 #define CPF_SZ          15
@@ -42,14 +44,14 @@ public:
     int getBloodType();
     bool getActive();
 
-    void setName(std::string n) { if (n.length() <= MAX_NAME_SZ) name = n; }
-    void setBirthDate(int b[DATES]) { for (int i = 0; i < DATES; i++) birthDate[i] = b[i]; }
+    void setName(std::string n);
+    void setBirthDate(int b[DATES]);
     void bDateToAge();
-    void setGender(int g) { if (g >= 0 && g < GENDERS) gender = g; }
-    void setCpf(std::string cpf) { this->cpf = cpf; }
-    void setNationality(std::string n) { nationality = n; }
-    void setBloodType(int b) { bloodType = b; }
-    void setActive(bool a) { active = a; }
+    void setGender(int g);
+    void setCpf(std::string cpf);
+    void setNationality(std::string n);
+    void setBloodType(int b);
+    void setActive(bool a);
 };
 
 Person::Person(){}

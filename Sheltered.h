@@ -3,25 +3,30 @@
 #include "Person.h"
 #include <string>
 
-class Sheltered : public Person {
-private:
-    std::string responsible;
-    bool needResources;
-    bool needHealthAssist;
+using namespace std;
 
+class Sheltered : public Person {
+public:
     Sheltered();
     ~Sheltered();
     Sheltered(std::string name, int birthDate[DATES], int gender, std::string cpf, std::string nationality, int bloodType);
     std::string getResponsible();
-    void setResponsible(std::string r);
+    
 
     void requestResources();
     bool isNeedingResources();
     void setNeedResources(bool value);
+    void setResponsible(std::string r);
 
-    void requestHealthAssist();
-    bool isNeedingHealthAssist();
-    void setNeedHealthAssist(bool value);
+    /* AINDA NAO DESENVOLVIDOS */
+    //void requestHealthAssist();
+    //bool isNeedingHealthAssist();
+    //void setNeedHealthAssist(bool value);
+
+private:
+    std::string responsible;
+    bool needResources;
+    bool needHealthAssist;
 };
 Sheltered::Sheltered(){}
 

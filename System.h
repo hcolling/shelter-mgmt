@@ -11,53 +11,16 @@ class System{
     public:
 
     // === Validacões ===
-    bool validarCPF(const string& cpf) {
-        regex formato(R"(\d{3}\.\d{3}\.\d{3}-\d{2})");
-        return regex_match(cpf, formato);
-    }
-    bool validarNome(const string& nome) {
-        return !nome.empty() && nome.length() <= MAX_NAME_SZ;
-    }
-    bool validarGenero(int g) {
-        return g >= 0 && g < GENDERS;
-    }
-    bool validarNascimento(int b[DATES]) {
-        return (b[DAY] >= 1 && b[DAY] <= 31) &&
-            (b[MONTH] >= 1 && b[MONTH] <= 12) &&
-            (b[YEAR] > 1900 && b[YEAR] <= 2025);
-    }
-    bool validarUsuario(const string& u) {
-        return !u.empty() && u.length() <= MAX_USR_SZ;
-    }
-    bool validarSenha(const string& s) {
-        return s.length() >= 4 && s.length() <= MAX_PW_SZ;
-    }
+    bool validarCPF(const string& cpf);
+    bool validarNome(const string& nome);
+    bool validarGenero(int g);
+    bool validarNascimento(int b[DATES]);
+    bool validarUsuario(const string& u);
+    bool validarSenha(const string& s);
 
     // === Utilitarias ===
-    int converterTipoSanguineo(const string& tipo) {
-        if (tipo == "O-") return O_NEG;
-        if (tipo == "O+") return O_POS;
-        if (tipo == "A-") return A_NEG;
-        if (tipo == "A+") return A_POS;
-        if (tipo == "B-") return B_NEG;
-        if (tipo == "B+") return B_POS;
-        if (tipo == "AB-") return AB_NEG;
-        if (tipo == "AB+") return AB_POS;
-        return -1;
-    }
-    string tipoSanguineoParaTexto(int tipo) {
-        switch (tipo) {
-            case O_NEG: return "O-";
-            case O_POS: return "O+";
-            case A_NEG: return "A-";
-            case A_POS: return "A+";
-            case B_NEG: return "B-";
-            case B_POS: return "B+";
-            case AB_NEG: return "AB-";
-            case AB_POS: return "AB+";
-            default: return "Desconhecido";
-        }
-    }
+    int converterTipoSanguineo(const string& tipo);
+    string tipoSanguineoParaTexto(int tipo);
     bool stringMatch(const string& a, const string& b) {
         string la = a, lb = b;
         transform(la.begin(), la.end(), la.begin(), ::tolower);
@@ -66,29 +29,29 @@ class System{
     }
 
     // === Salvar ===
-    void salvarAdmCSV(const Adm& adm) {
+    void salvarAdmCSV(Adm *adm) {
         ofstream file(ADM_RGSTR_FILE, ios::app);
-        file << adm.getName() << ","
-            << adm.getCpf() << ","
-            << adm.getAge() << ","
-            << (adm.getGender() == 0 ? "M" : "F") << ","
-            << adm.getNationality() << ","
-            << tipoSanguineoParaTexto(adm.getBloodType()) << ","
-            << adm.getUsername() << ","
-            << adm.getPassword() << ","
-            << adm.getActive() << endl;
+        file << adm->getName() << ","
+            << adm->getCpf() << ","
+            << adm->getAge() << ","
+            << (adm->getGender() == 0 ? "M" : "F") << ","
+            << adm->getNationality() << ","
+            << tipoSanguineoParaTexto(adm->getBloodType()) << ","
+            << adm->getUsername() << ","
+            << adm->getPassword() << ","
+            << adm->getActive() << endl;
         file.close();
     }
-    void salvarShelteredCSV(const Sheltered& s) {
+    void salvarShelteredCSV(Sheltered *s) {
         ofstream file(RGSTR_FILE, ios::app);
-        file << s.getName() << ","
-            << s.getCpf() << ","
-            << s.getAge() << ","
-            << s.getResponsible() << ","
-            << (s.getGender() == 0 ? "M" : "F") << ","
-            << s.getNationality() << ","
-            << tipoSanguineoParaTexto(s.getBloodType()) << ","
-            << s.getActive() << endl;
+        file << s->getName() << ","
+            << s->getCpf() << ","
+            << s->getAge() << ","
+            << s->getResponsible() << ","
+            << (s->getGender() == 0 ? "M" : "F") << ","
+            << s->getNationality() << ","
+            << tipoSanguineoParaTexto(s->getBloodType()) << ","
+            << s->getActive() << endl;
         file.close();
     }
 
@@ -143,7 +106,7 @@ class System{
     // === Busca ===
     void buscarAdmPorNome(const vector<Adm>& adms, const string& nome) {
         bool encontrou = false;
-        for (const auto& adm : adms) {
+        for (auto adm : adms) {
             string nomeAdm = adm.getName();
             string nomeBusca = nome;
 
@@ -162,7 +125,7 @@ class System{
     }
 
     void buscarAdmPorCpf(const vector<Adm>& adms, const string& cpf) {
-        for (const auto& adm : adms) {
+        for (auto adm : adms) {
             if (adm.getCpf() == cpf) {
                 cout << "Nome: " << adm.getName() << "\nCPF: " << adm.getCpf()
                     << "\nUsuario: " << adm.getUsername()
@@ -175,7 +138,7 @@ class System{
 
     void buscarAbrigadoPorNome(const vector<Sheltered>& abr, const string& nome) {
         bool encontrou = false;
-        for (const auto& s : abr) {
+        for (auto s : abr) {
             string nomeShel = s.getName();
             string nomeBusca = nome;
 
@@ -194,7 +157,7 @@ class System{
     }
 
     void buscarAbrigadoPorCpf(const vector<Sheltered>& abr, const string& cpf) {
-        for (const auto& s : abr) {
+        for (auto s : abr) {
             if (s.getCpf() == cpf) {
                 cout << "Nome: " << s.getName() << "\nCPF: " << s.getCpf()
                     << "\nResponsavel: " << s.getResponsible()
@@ -207,7 +170,7 @@ class System{
 
     void buscarAbrigadoPorRecurso(const vector<Sheltered>& abr) {
         bool encontrou = false;
-        for (const auto& s : abr) {
+        for (auto s : abr) {
             if (s.isNeedingResources()) {
                 cout << "Nome: " << s.getName() << "\nCPF: " << s.getCpf()
                     << "\nPrecisa de recursos\n";
@@ -219,7 +182,7 @@ class System{
 
     void buscarAbrigadoPorSaude(const vector<Sheltered>& abr) {
         bool encontrou = false;
-        for (const auto& s : abr) {
+        for (auto s : abr) {
             if (s.isNeedingHealthAssist()) {
                 cout << "Nome: " << s.getName() << "\nCPF: " << s.getCpf()
                     << "\nPrecisa de assistencia medica\n";
@@ -281,7 +244,7 @@ class System{
             if (!encontrado) cout << "Administrador nao encontrado.\n";
             else {
                 ofstream file(ADM_RGSTR_FILE);
-                for (const auto& adm : lista) {
+                for (auto adm : lista) {
                     file << adm.getName() << "," << adm.getCpf() << ","
                         << adm.getUsername() << "," << adm.getPassword() << ","
                         << adm.getGender() << "," << adm.getNationality() << ","
@@ -331,7 +294,7 @@ class System{
             if (!encontrado) cout << "Abrigado nao encontrado.\n";
             else {
                 ofstream file(RGSTR_FILE);
-                for (const auto& s : lista) {
+                for (auto s : lista) {
                     file << s.getName() << "," << s.getCpf() << ","
                         << s.getAge() << "," << (s.getGender() == 0 ? "M" : "F") << ","
                         << s.getNationality() << "," << s.getResponsible() << ","
@@ -354,7 +317,7 @@ class System{
             vector<Adm> lista = carregarAdmsCSV();
             bool removido = false;
             vector<Adm> novaLista;
-            for (const auto& adm : lista) {
+            for (auto adm : lista) {
                 if (adm.getCpf() == cpfBusca) {
                     removido = true;
                     continue;
@@ -364,7 +327,7 @@ class System{
             if (!removido) cout << "Administrador nao encontrado.\n";
             else {
                 ofstream file(ADM_RGSTR_FILE);
-                for (const auto& adm : novaLista) {
+                for (auto adm : novaLista) {
                     file << adm.getName() << "," << adm.getCpf() << ","
                         << adm.getUsername() << "," << adm.getPassword() << ","
                         << adm.getGender() << "," << adm.getNationality() << ","
@@ -379,7 +342,7 @@ class System{
             vector<Sheltered> lista = carregarShelteredCSV();
             bool removido = false;
             vector<Sheltered> novaLista;
-            for (const auto& s : lista) {
+            for (auto s : lista) {
                 if (s.getCpf() == cpfBusca) {
                     removido = true;
                     continue;
@@ -389,7 +352,7 @@ class System{
             if (!removido) cout << "Abrigado nao encontrado.\n";
             else {
                 ofstream file(RGSTR_FILE);
-                for (const auto& s : novaLista) {
+                for (auto s : novaLista) {
                     file << s.getName() << "," << s.getCpf() << ","
                         << s.getAge() << "," << (s.getGender() == 0 ? "M" : "F") << ","
                         << s.getNationality() << "," << s.getResponsible() << ","
@@ -500,7 +463,7 @@ class System{
         }
         adm.setActive(ativo == 1);
 
-        salvarAdmCSV(adm);
+        salvarAdmCSV(&adm);
         cout << "Administrador cadastrado com sucesso!\n";
     }
 
@@ -567,7 +530,7 @@ class System{
         }
 
 
-        salvarShelteredCSV(s);
+        salvarShelteredCSV(&s);
         cout << "Abrigado cadastrado com sucesso!\n";
     }
 
@@ -626,3 +589,56 @@ class System{
     }
 
 };
+
+bool System::validarCPF(const string& cpf) {
+    regex formato(R"(\d{3}\.\d{3}\.\d{3}-\d{2})");
+    return regex_match(cpf, formato);
+}
+
+bool System::validarNome(const string& nome) {
+    return !nome.empty() && nome.length() <= MAX_NAME_SZ;
+}
+
+bool System::validarGenero(int g) {
+    return g >= 0 && g < GENDERS;
+}
+
+bool System::validarNascimento(int b[DATES]) {
+    return (b[DAY] >= 1 && b[DAY] <= 31) &&
+        (b[MONTH] >= 1 && b[MONTH] <= 12) &&
+        (b[YEAR] > 1900 && b[YEAR] <= 2025);
+}
+
+bool System::validarUsuario(const string& u) {
+    return !u.empty() && u.length() <= MAX_USR_SZ;
+}
+
+bool System::validarSenha(const string& s) {
+    return s.length() >= 4 && s.length() <= MAX_PW_SZ;
+}
+
+int System::converterTipoSanguineo(const string& tipo) {
+    if (tipo == "O-") return O_NEG;
+    if (tipo == "O+") return O_POS;
+    if (tipo == "A-") return A_NEG;
+    if (tipo == "A+") return A_POS;
+    if (tipo == "B-") return B_NEG;
+    if (tipo == "B+") return B_POS;
+    if (tipo == "AB-") return AB_NEG;
+    if (tipo == "AB+") return AB_POS;
+    return -1;
+}
+
+string System::tipoSanguineoParaTexto(int tipo) {
+    switch (tipo) {
+        case O_NEG: return "O-";
+        case O_POS: return "O+";
+        case A_NEG: return "A-";
+        case A_POS: return "A+";
+        case B_NEG: return "B-";
+        case B_POS: return "B+";
+        case AB_NEG: return "AB-";
+        case AB_POS: return "AB+";
+        default: return "Desconhecido";
+    }
+}

@@ -1,5 +1,7 @@
 #include "Sheltered.h"
 
+using namespace std;
+
 class Adm : public Person {
 private:
     string username;
@@ -21,9 +23,9 @@ Adm::Adm(){}
 
 Adm::~Adm(){}
 
-string Adm::getUsername() const { return username; }
+string Adm::getUsername(){ return username; }
 
-string Adm::getPassword() const { return password; }
+string Adm::getPassword(){ return password; }
 
 void Adm::setUsername(string u) { if (u.length() <= MAX_USR_SZ) username = u; }
 
