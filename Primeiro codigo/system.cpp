@@ -1,33 +1,134 @@
-#include "System.h"
+#include <iostream>
+#include <string>
+#include <ctime>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <regex>
 
-bool System::validarCPF(const string& cpf) {
+using namespace std;
+
+#define MAX_NAME_SZ     100
+#define MAX_NATION_SZ   100
+#define CPF_SZ          15
+#define MAX_USR_SZ      15
+#define MAX_PW_SZ       20
+#define MAX_DISEASES    100
+#define MAX_ALLERGIES   100
+#define ADM_RGSTR_FILE  "./adm.txt"
+#define RGSTR_FILE      "./shelter.txt"
+
+enum t_gender { MALE, FEMALE, GENDERS };
+enum t_bday { DAY, MONTH, YEAR, DATES };
+enum t_bloodType { O_NEG, O_POS, A_NEG, A_POS, B_NEG, B_POS, AB_NEG, AB_POS, BLOOD_TYPES };
+
+class Person {
+private:
+    string name;
+    int age;
+    int birthDate[DATES];
+    int gender;
+    string cpf;
+    string nationality;
+    int bloodType;
+    string diseases[MAX_DISEASES];
+    string allergies[MAX_ALLERGIES];
+    bool active;
+
+    void bDateToAge() {
+        time_t now = time(0);
+        tm *ltm = localtime(&now);
+        int year = 1900 + ltm->tm_year;
+        int month = 1 + ltm->tm_mon;
+        int day = ltm->tm_mday;
+        age = year - birthDate[YEAR];
+        if (month < birthDate[MONTH] || (month == birthDate[MONTH] && day < birthDate[DAY])) age--;
+    };
+
+public:
+    string getName() const { return name; }
+    int getAge() const { const_cast<Person*>(this)->bDateToAge(); return age; }
+    int getGender() const { return gender; }
+    string getCpf() const { return cpf; }
+    string getNationality() const { return nationality; }
+    int getBloodType() const { return bloodType; }
+    bool getActive() const { return active; }
+
+    void setName(string n) { if (n.length() <= MAX_NAME_SZ) name = n; }
+    void setBirthDate(int b[DATES]) { for (int i = 0; i < DATES; i++) birthDate[i] = b[i]; }
+    void setGender(int g) { if (g >= 0 && g < GENDERS) gender = g; }
+    void setCpf(string c) { cpf = c; }
+    void setNationality(string n) { nationality = n; }
+    void setBloodType(int b) { bloodType = b; }
+    void setActive(bool a) { active = a; }
+};
+
+class Sheltered : public Person {
+private:
+    string responsible;
+    bool needResources;
+    bool needHealthAssist;
+
+public:
+    string getResponsible() const { return responsible; }
+    void setResponsible(string r) {
+        if (getAge() < 18) responsible = r;
+        else responsible = "N/A";
+    }
+
+    void requestResources() { needResources = true; }
+    bool isNeedingResources() const { return needResources; }
+    void setNeedResources(bool value) { needResources = value; }
+
+    void requestHealthAssist() { needHealthAssist = true; }
+    bool isNeedingHealthAssist() const { return needHealthAssist; }
+    void setNeedHealthAssist(bool value) { needHealthAssist = value; }
+};
+
+class Adm : public Person {
+private:
+    string username;
+    string password;
+
+public:
+    string getUsername() const { return username; }
+    string getPassword() const { return password; }
+    void setUsername(string u) { if (u.length() <= MAX_USR_SZ) username = u; }
+    void setPassword(string p) { if (p.length() <= MAX_PW_SZ) password = p; }
+
+    void checkLackResources(Sheltered &s) {
+        if (s.isNeedingResources()) s.setNeedResources(false);
+    }
+    void checkNeedHealthAssist(Sheltered &s) {
+        if (s.isNeedingHealthAssist()) s.setNeedHealthAssist(false);
+    }
+};
+
+// === Validacões ===
+bool validarCPF(const string& cpf) {
     regex formato(R"(\d{3}\.\d{3}\.\d{3}-\d{2})");
     return regex_match(cpf, formato);
 }
-
-bool System::validarNome(const string& nome) {
+bool validarNome(const string& nome) {
     return !nome.empty() && nome.length() <= MAX_NAME_SZ;
 }
-
-bool System::validarGenero(int g) {
+bool validarGenero(int g) {
     return g >= 0 && g < GENDERS;
 }
-
-bool System::validarNascimento(int b[DATES]) {
+bool validarNascimento(int b[DATES]) {
     return (b[DAY] >= 1 && b[DAY] <= 31) &&
-        (b[MONTH] >= 1 && b[MONTH] <= 12) &&
-        (b[YEAR] > 1900 && b[YEAR] <= 2025);
+           (b[MONTH] >= 1 && b[MONTH] <= 12) &&
+           (b[YEAR] > 1900 && b[YEAR] <= 2025);
 }
-
-bool System::validarUsuario(const string& u) {
+bool validarUsuario(const string& u) {
     return !u.empty() && u.length() <= MAX_USR_SZ;
 }
-
-bool System::validarSenha(const string& s) {
+bool validarSenha(const string& s) {
     return s.length() >= 4 && s.length() <= MAX_PW_SZ;
 }
 
-int System::converterTipoSanguineo(const string& tipo) {
+// === Utilitarias ===
+int converterTipoSanguineo(const string& tipo) {
     if (tipo == "O-") return O_NEG;
     if (tipo == "O+") return O_POS;
     if (tipo == "A-") return A_NEG;
@@ -39,7 +140,7 @@ int System::converterTipoSanguineo(const string& tipo) {
     return -1;
 }
 
-string System::tipoSanguineoParaTexto(int tipo) {
+string tipoSanguineoParaTexto(int tipo) {
     switch (tipo) {
         case O_NEG: return "O-";
         case O_POS: return "O+";
@@ -53,41 +154,43 @@ string System::tipoSanguineoParaTexto(int tipo) {
     }
 }
 
-bool System::stringMatch(const string& a, const string& b) {
+bool stringMatch(const string& a, const string& b) {
     string la = a, lb = b;
     transform(la.begin(), la.end(), la.begin(), ::tolower);
     transform(lb.begin(), lb.end(), lb.begin(), ::tolower);
     return la.find(lb) != string::npos;
 }
 
-void System::salvarAdmCSV(Adm *adm) {
+// === Salvar ===
+void salvarAdmCSV(const Adm& adm) {
     ofstream file(ADM_RGSTR_FILE, ios::app);
-    file << adm->getName() << ","
-        << adm->getCpf() << ","
-        << adm->getAge() << ","
-        << (adm->getGender() == 0 ? "M" : "F") << ","
-        << adm->getNationality() << ","
-        << tipoSanguineoParaTexto(adm->getBloodType()) << ","
-        << adm->getUsername() << ","
-        << adm->getPassword() << ","
-        << adm->getActive() << endl;
+    file << adm.getName() << ","
+         << adm.getCpf() << ","
+         << adm.getAge() << ","
+         << (adm.getGender() == 0 ? "M" : "F") << ","
+         << adm.getNationality() << ","
+         << tipoSanguineoParaTexto(adm.getBloodType()) << ","
+         << adm.getUsername() << ","
+         << adm.getPassword() << ","
+         << adm.getActive() << endl;
     file.close();
 }
 
-void System::salvarShelteredCSV(Sheltered *s) {
+void salvarShelteredCSV(const Sheltered& s) {
     ofstream file(RGSTR_FILE, ios::app);
-    file << s->getName() << ","
-        << s->getCpf() << ","
-        << s->getAge() << ","
-        << s->getResponsible() << ","
-        << (s->getGender() == 0 ? "M" : "F") << ","
-        << s->getNationality() << ","
-        << tipoSanguineoParaTexto(s->getBloodType()) << ","
-        << s->getActive() << endl;
+    file << s.getName() << ","
+         << s.getCpf() << ","
+         << s.getAge() << ","
+         << s.getResponsible() << ","
+         << (s.getGender() == 0 ? "M" : "F") << ","
+         << s.getNationality() << ","
+         << tipoSanguineoParaTexto(s.getBloodType()) << ","
+         << s.getActive() << endl;
     file.close();
 }
 
-vector<Adm> System::carregarAdmsCSV() {
+// === Leitura ===
+vector<Adm> carregarAdmsCSV() {
     vector<Adm> lista;
     ifstream file(ADM_RGSTR_FILE);
     string linha;
@@ -110,7 +213,7 @@ vector<Adm> System::carregarAdmsCSV() {
     return lista;
 }
 
-vector<Sheltered> System::carregarShelteredCSV() {
+vector<Sheltered> carregarShelteredCSV() {
     vector<Sheltered> lista;
     ifstream file(RGSTR_FILE);
     string linha;
@@ -134,9 +237,10 @@ vector<Sheltered> System::carregarShelteredCSV() {
     return lista;
 }
 
-void System::buscarAdmPorNome(const vector<Adm>& adms, const string& nome) {
+// === Busca ===
+void buscarAdmPorNome(const vector<Adm>& adms, const string& nome) {
     bool encontrou = false;
-    for (auto adm : adms) {
+    for (const auto& adm : adms) {
         string nomeAdm = adm.getName();
         string nomeBusca = nome;
 
@@ -146,29 +250,29 @@ void System::buscarAdmPorNome(const vector<Adm>& adms, const string& nome) {
 
         if (nomeAdm.find(nomeBusca) != string::npos) {
             cout << "Nome: " << adm.getName() << "\nCPF: " << adm.getCpf()
-                << "\nUsuario: " << adm.getUsername()
-                << "\nAtivo: " << (adm.getActive() ? "Sim" : "Ausente") << endl;
+                 << "\nUsuario: " << adm.getUsername()
+                 << "\nAtivo: " << (adm.getActive() ? "Sim" : "Ausente") << endl;
             encontrou = true;
         }
     }
     if (!encontrou) cout << "Nenhum administrador encontrado com esse nome.\n";
 }
 
-void System::buscarAdmPorCpf(const vector<Adm>& adms, const string& cpf) {
-    for (auto adm : adms) {
+void buscarAdmPorCpf(const vector<Adm>& adms, const string& cpf) {
+    for (const auto& adm : adms) {
         if (adm.getCpf() == cpf) {
             cout << "Nome: " << adm.getName() << "\nCPF: " << adm.getCpf()
-                << "\nUsuario: " << adm.getUsername()
-                << "\nAtivo: " << (adm.getActive() ? "Sim" : "Ausente") << endl;
+                 << "\nUsuario: " << adm.getUsername()
+                 << "\nAtivo: " << (adm.getActive() ? "Sim" : "Ausente") << endl;
             return;
         }
     }
     cout << "Administrador nao encontrado com esse CPF.\n";
 }
 
-void System::buscarAbrigadoPorNome(const vector<Sheltered>& abr, const string& nome) {
+void buscarAbrigadoPorNome(const vector<Sheltered>& abr, const string& nome) {
     bool encontrou = false;
-    for (auto s : abr) {
+    for (const auto& s : abr) {
         string nomeShel = s.getName();
         string nomeBusca = nome;
 
@@ -178,51 +282,52 @@ void System::buscarAbrigadoPorNome(const vector<Sheltered>& abr, const string& n
 
         if (nomeShel.find(nomeBusca) != string::npos) {
             cout << "Nome: " << s.getName() << "\nCPF: " << s.getCpf()
-                << "\nResponsavel: " << s.getResponsible()
-                << "\nAtivo: " << (s.getActive() ? "Sim" : "Ausente") << endl;
+                 << "\nResponsavel: " << s.getResponsible()
+                 << "\nAtivo: " << (s.getActive() ? "Sim" : "Ausente") << endl;
             encontrou = true;
         }
     }
     if (!encontrou) cout << "Nenhum abrigado encontrado com esse nome.\n";
 }
 
-void System::buscarAbrigadoPorCpf(const vector<Sheltered>& abr, const string& cpf) {
-    for (auto s : abr) {
+void buscarAbrigadoPorCpf(const vector<Sheltered>& abr, const string& cpf) {
+    for (const auto& s : abr) {
         if (s.getCpf() == cpf) {
             cout << "Nome: " << s.getName() << "\nCPF: " << s.getCpf()
-                << "\nResponsavel: " << s.getResponsible()
-                << "\nAtivo: " << (s.getActive() ? "Sim" : "Ausente") << endl;
+                 << "\nResponsavel: " << s.getResponsible()
+                 << "\nAtivo: " << (s.getActive() ? "Sim" : "Ausente") << endl;
             return;
         }
     }
     cout << "Abrigado nao encontrado com esse CPF.\n";
 }
 
-void System::buscarAbrigadoPorRecurso(const vector<Sheltered>& abr) {
+void buscarAbrigadoPorRecurso(const vector<Sheltered>& abr) {
     bool encontrou = false;
-    for (auto s : abr) {
+    for (const auto& s : abr) {
         if (s.isNeedingResources()) {
             cout << "Nome: " << s.getName() << "\nCPF: " << s.getCpf()
-                << "\nPrecisa de recursos\n";
+                 << "\nPrecisa de recursos\n";
             encontrou = true;
         }
     }
     if (!encontrou) cout << "Nenhum abrigado precisa de recursos no momento.\n";
 }
 
-void System::buscarAbrigadoPorSaude(const vector<Sheltered>& abr) {
+void buscarAbrigadoPorSaude(const vector<Sheltered>& abr) {
     bool encontrou = false;
-    for (auto s : abr) {
+    for (const auto& s : abr) {
         if (s.isNeedingHealthAssist()) {
             cout << "Nome: " << s.getName() << "\nCPF: " << s.getCpf()
-                << "\nPrecisa de assistencia medica\n";
+                 << "\nPrecisa de assistencia medica\n";
             encontrou = true;
         }
     }
     if (!encontrou) cout << "Nenhum abrigado precisa de assistencia medica no momento.\n";
 }
 
-void System::editarCadastro(bool isAdm) {
+// === Edicao ===
+void editarCadastro(bool isAdm) {
     string cpfBusca;
     cout << "CPF do cadastro a editar: ";
     getline(cin, cpfBusca);
@@ -273,12 +378,12 @@ void System::editarCadastro(bool isAdm) {
         if (!encontrado) cout << "Administrador nao encontrado.\n";
         else {
             ofstream file(ADM_RGSTR_FILE);
-            for (auto adm : lista) {
+            for (const auto& adm : lista) {
                 file << adm.getName() << "," << adm.getCpf() << ","
-                    << adm.getUsername() << "," << adm.getPassword() << ","
-                    << adm.getGender() << "," << adm.getNationality() << ","
-                    << tipoSanguineoParaTexto(adm.getBloodType()) << ","
-                    << adm.getActive() << "," << adm.getAge() << endl;
+                     << adm.getUsername() << "," << adm.getPassword() << ","
+                     << adm.getGender() << "," << adm.getNationality() << ","
+                     << tipoSanguineoParaTexto(adm.getBloodType()) << ","
+                     << adm.getActive() << "," << adm.getAge() << endl;
             }
             file.close();
             cout << "Cadastro atualizado com sucesso.\n";
@@ -323,12 +428,12 @@ void System::editarCadastro(bool isAdm) {
         if (!encontrado) cout << "Abrigado nao encontrado.\n";
         else {
             ofstream file(RGSTR_FILE);
-            for (auto s : lista) {
+            for (const auto& s : lista) {
                 file << s.getName() << "," << s.getCpf() << ","
-                    << s.getAge() << "," << (s.getGender() == 0 ? "M" : "F") << ","
-                    << s.getNationality() << "," << s.getResponsible() << ","
-                    << tipoSanguineoParaTexto(s.getBloodType()) << ","
-                    << s.getActive() << endl;
+                     << s.getAge() << "," << (s.getGender() == 0 ? "M" : "F") << ","
+                     << s.getNationality() << "," << s.getResponsible() << ","
+                     << tipoSanguineoParaTexto(s.getBloodType()) << ","
+                     << s.getActive() << endl;
             }
             file.close();
             cout << "Cadastro atualizado com sucesso.\n";
@@ -336,7 +441,8 @@ void System::editarCadastro(bool isAdm) {
     }
 }
 
-void System::excluirCadastro(bool isAdm) {
+// === Exclusao ===
+void excluirCadastro(bool isAdm) {
     string cpfBusca;
     cout << "CPF do cadastro a excluir: ";
     getline(cin, cpfBusca);
@@ -345,7 +451,7 @@ void System::excluirCadastro(bool isAdm) {
         vector<Adm> lista = carregarAdmsCSV();
         bool removido = false;
         vector<Adm> novaLista;
-        for (auto adm : lista) {
+        for (const auto& adm : lista) {
             if (adm.getCpf() == cpfBusca) {
                 removido = true;
                 continue;
@@ -355,12 +461,12 @@ void System::excluirCadastro(bool isAdm) {
         if (!removido) cout << "Administrador nao encontrado.\n";
         else {
             ofstream file(ADM_RGSTR_FILE);
-            for (auto adm : novaLista) {
+            for (const auto& adm : novaLista) {
                 file << adm.getName() << "," << adm.getCpf() << ","
-                    << adm.getUsername() << "," << adm.getPassword() << ","
-                    << adm.getGender() << "," << adm.getNationality() << ","
-                    << tipoSanguineoParaTexto(adm.getBloodType()) << ","
-                    << adm.getActive() << "," << adm.getAge() << endl;
+                     << adm.getUsername() << "," << adm.getPassword() << ","
+                     << adm.getGender() << "," << adm.getNationality() << ","
+                     << tipoSanguineoParaTexto(adm.getBloodType()) << ","
+                     << adm.getActive() << "," << adm.getAge() << endl;
             }
             file.close();
             cout << "Cadastro excluido com sucesso.\n";
@@ -370,7 +476,7 @@ void System::excluirCadastro(bool isAdm) {
         vector<Sheltered> lista = carregarShelteredCSV();
         bool removido = false;
         vector<Sheltered> novaLista;
-        for (auto s : lista) {
+        for (const auto& s : lista) {
             if (s.getCpf() == cpfBusca) {
                 removido = true;
                 continue;
@@ -380,12 +486,12 @@ void System::excluirCadastro(bool isAdm) {
         if (!removido) cout << "Abrigado nao encontrado.\n";
         else {
             ofstream file(RGSTR_FILE);
-            for (auto s : novaLista) {
+            for (const auto& s : novaLista) {
                 file << s.getName() << "," << s.getCpf() << ","
-                    << s.getAge() << "," << (s.getGender() == 0 ? "M" : "F") << ","
-                    << s.getNationality() << "," << s.getResponsible() << ","
-                    << tipoSanguineoParaTexto(s.getBloodType()) << ","
-                    << s.getActive() << endl;
+                     << s.getAge() << "," << (s.getGender() == 0 ? "M" : "F") << ","
+                     << s.getNationality() << "," << s.getResponsible() << ","
+                     << tipoSanguineoParaTexto(s.getBloodType()) << ","
+                     << s.getActive() << endl;
             }
             file.close();
             cout << "Cadastro excluido com sucesso.\n";
@@ -393,7 +499,8 @@ void System::excluirCadastro(bool isAdm) {
     }
 }
 
-void System::exibirCSV(const string& caminho) {
+// === Menu ===
+void exibirCSV(const string& caminho) {
     ifstream file(caminho);
     string linha;
     if (!file) {
@@ -404,7 +511,7 @@ void System::exibirCSV(const string& caminho) {
     file.close();
 }
 
-void System::cadastrarNovoAdm() {
+void cadastrarNovoAdm() {
     Adm adm;
     string nome, cpf, usuario, senha, nacionalidade, tipo;
     int genero, bday[DATES], sangue, ativo;
@@ -490,11 +597,12 @@ void System::cadastrarNovoAdm() {
     }
     adm.setActive(ativo == 1);
 
-    salvarAdmCSV(&adm);
+    salvarAdmCSV(adm);
     cout << "Administrador cadastrado com sucesso!\n";
 }
 
-void System::cadastrarNovoAbr() {
+void cadastrarNovoAbr() {
+    Sheltered s;
     string nome, cpf, nacionalidade, responsavel, tipo;
     int genero, bday[DATES], sangue, ativo;
 
@@ -505,6 +613,7 @@ void System::cadastrarNovoAbr() {
         if (validarNome(nome)) break;
         cout << "Nome invalido! Tente novamente.\n";
     }
+    s.setName(nome);
 
     // CPF
     while (true) {
@@ -513,6 +622,7 @@ void System::cadastrarNovoAbr() {
         if (validarCPF(cpf)) break;
         cout << "CPF invalido! Tente novamente.\n";
     }
+    s.setCpf(cpf);
 
     // Data de nascimento
     while (true) {
@@ -521,7 +631,8 @@ void System::cadastrarNovoAbr() {
         cin.ignore();
         if (validarNascimento(bday)) break;
         cout << "Data invalida! Tente novamente.\n";
-    }\
+    }
+    s.setBirthDate(bday);
 
     // Genero
     while (true) {
@@ -531,21 +642,12 @@ void System::cadastrarNovoAbr() {
         if (validarGenero(genero)) break;
         cout << "Genero invalido! Tente novamente.\n";
     }
+    s.setGender(genero);
 
     // Nacionalidade
     cout << "Nacionalidade: ";
     getline(cin, nacionalidade);
-
-    // Tipo sanguineo
-    while (true) {
-        cout << "Tipo sanguineo (ex: O-, AB+): ";
-        getline(cin, tipo);
-        sangue = converterTipoSanguineo(tipo);
-        if (sangue != -1) break;
-        cout << "Tipo sanguineo invalido! Tente novamente.\n";
-    }
-
-    Sheltered s(nome, bday, genero, cpf, nacionalidade, sangue);
+    s.setNationality(nacionalidade);
 
     // Responsavel (se menor)
     if (s.getAge() < 18) {
@@ -556,12 +658,31 @@ void System::cadastrarNovoAbr() {
         s.setResponsible("N/A");
     }
 
+    // Tipo sanguineo
+    while (true) {
+        cout << "Tipo sanguineo (ex: O-, AB+): ";
+        getline(cin, tipo);
+        sangue = converterTipoSanguineo(tipo);
+        if (sangue != -1) break;
+        cout << "Tipo sanguineo invalido! Tente novamente.\n";
+    }
+    s.setBloodType(sangue);
 
-    salvarShelteredCSV(&s);
+    // Ativo
+    while (true) {
+        cout << "Ativo no abrigo? (1=Sim, 0=Ausente): ";
+        cin >> ativo;
+        cin.ignore();
+        if (ativo == 0 || ativo == 1) break;
+        cout << "Entrada invalida! Digite 1 ou 0.\n";
+    }
+    s.setActive(ativo == 1);
+
+    salvarShelteredCSV(s);
     cout << "Abrigado cadastrado com sucesso!\n";
-}   
+}
 
-void System::exibirCadastrados() {
+void exibirCadastrados() {
     int opcao;
     cout << "Deseja ver:\n1. Abrigados\n2. Administradores\n> ";
     cin >> opcao; cin.ignore();
@@ -570,7 +691,7 @@ void System::exibirCadastrados() {
     else cout << "Opcao invalida.\n";
 }
 
-void System::menuBusca() {
+void menuBusca() {
     int tipo;
     cout << "\n== Buscar cadastros ==\n";
     cout << "1. Buscar Administrador\n";
@@ -613,4 +734,49 @@ void System::menuBusca() {
     } else {
         cout << "Tipo invalido!\n";
     }
+}
+
+int main() {
+    int opcao;
+    do {
+        cout << "\n==== MENU PRINCIPAL ====\n";
+        cout << "1. Cadastrar novo abrigado\n";
+        cout << "2. Cadastrar novo administrador\n";
+        cout << "3. Exibir cadastrados\n";
+        cout << "4. Buscar cadastro\n";
+        cout << "5. Editar cadastro\n";
+        cout << "6. Excluir cadastro\n";
+        cout << "7. Sair\n> ";
+        cin >> opcao;
+        cin.ignore();
+
+        switch (opcao) {
+            case 1: cadastrarNovoAbr(); break;
+            case 2: cadastrarNovoAdm(); break;
+            case 3: exibirCadastrados(); break;
+            case 4: menuBusca(); break;
+            case 5: {
+                int tipo;
+                cout << "Editar cadastro de:\n1. Administrador\n2. Abrigado\n> ";
+                cin >> tipo; cin.ignore();
+                editarCadastro(tipo == 1);
+                break;
+            }
+            case 6: {
+                int tipo;
+                string confirm;
+                cout << "Excluir cadastro de:\n1. Administrador\n2. Abrigado\n> ";
+                cin >> tipo; cin.ignore();
+                cout << "Tem certeza que deseja excluir? (s para confirmar): ";
+                getline(cin, confirm);
+                if (confirm == "s") excluirCadastro(tipo == 1);
+                else cout << "Operacao cancelada.\n";
+                break;
+            }
+            case 7: cout << "Saindo...\n"; break;
+            default: cout << "Opcao invalida!\n";
+        }
+    } while (opcao != 7);
+
+    return 0;
 }
