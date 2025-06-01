@@ -6,15 +6,33 @@ private:
     string password;
 
 public:
-    string getUsername() const { return username; }
-    string getPassword() const { return password; }
-    void setUsername(string u) { if (u.length() <= MAX_USR_SZ) username = u; }
-    void setPassword(string p) { if (p.length() <= MAX_PW_SZ) password = p; }
+    Adm();
+    ~Adm();
+    string getUsername();
+    string getPassword();
+    void setUsername(string u);
+    void setPassword(string p);
 
-    void checkLackResources(Sheltered &s) {
-        if (s.isNeedingResources()) s.setNeedResources(false);
-    }
-    void checkNeedHealthAssist(Sheltered &s) {
-        if (s.isNeedingHealthAssist()) s.setNeedHealthAssist(false);
-    }
+    void checkLackResources(Sheltered &s);
+    void checkNeedHealthAssist(Sheltered &s);
 };
+
+Adm::Adm(){}
+
+Adm::~Adm(){}
+
+string Adm::getUsername() const { return username; }
+
+string Adm::getPassword() const { return password; }
+
+void Adm::setUsername(string u) { if (u.length() <= MAX_USR_SZ) username = u; }
+
+void Adm::setPassword(string p) { if (p.length() <= MAX_PW_SZ) password = p; }
+
+void Adm::checkLackResources(Sheltered &s) {
+    if (s.isNeedingResources()) s.setNeedResources(false);
+}
+
+void Adm::checkNeedHealthAssist(Sheltered &s) {
+    if (s.isNeedingHealthAssist()) s.setNeedHealthAssist(false);
+}

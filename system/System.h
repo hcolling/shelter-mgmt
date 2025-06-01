@@ -7,6 +7,7 @@
 
 class System{
     public:
+
     // === Validacões ===
     bool validarCPF(const string& cpf) {
         regex formato(R"(\d{3}\.\d{3}\.\d{3}-\d{2})");
@@ -42,7 +43,6 @@ class System{
         if (tipo == "AB+") return AB_POS;
         return -1;
     }
-
     string tipoSanguineoParaTexto(int tipo) {
         switch (tipo) {
             case O_NEG: return "O-";
@@ -56,7 +56,6 @@ class System{
             default: return "Desconhecido";
         }
     }
-
     bool stringMatch(const string& a, const string& b) {
         string la = a, lb = b;
         transform(la.begin(), la.end(), la.begin(), ::tolower);
@@ -78,7 +77,6 @@ class System{
             << adm.getActive() << endl;
         file.close();
     }
-
     void salvarShelteredCSV(const Sheltered& s) {
         ofstream file(RGSTR_FILE, ios::app);
         file << s.getName() << ","
@@ -640,48 +638,3 @@ class System{
     }
 
 };
-
-int main() {
-    int opcao;
-    do {
-        cout << "\n==== MENU PRINCIPAL ====\n";
-        cout << "1. Cadastrar novo abrigado\n";
-        cout << "2. Cadastrar novo administrador\n";
-        cout << "3. Exibir cadastrados\n";
-        cout << "4. Buscar cadastro\n";
-        cout << "5. Editar cadastro\n";
-        cout << "6. Excluir cadastro\n";
-        cout << "7. Sair\n> ";
-        cin >> opcao;
-        cin.ignore();
-
-        switch (opcao) {
-            case 1: cadastrarNovoAbr(); break;
-            case 2: cadastrarNovoAdm(); break;
-            case 3: exibirCadastrados(); break;
-            case 4: menuBusca(); break;
-            case 5: {
-                int tipo;
-                cout << "Editar cadastro de:\n1. Administrador\n2. Abrigado\n> ";
-                cin >> tipo; cin.ignore();
-                editarCadastro(tipo == 1);
-                break;
-            }
-            case 6: {
-                int tipo;
-                string confirm;
-                cout << "Excluir cadastro de:\n1. Administrador\n2. Abrigado\n> ";
-                cin >> tipo; cin.ignore();
-                cout << "Tem certeza que deseja excluir? (s para confirmar): ";
-                getline(cin, confirm);
-                if (confirm == "s") excluirCadastro(tipo == 1);
-                else cout << "Operacao cancelada.\n";
-                break;
-            }
-            case 7: cout << "Saindo...\n"; break;
-            default: cout << "Opcao invalida!\n";
-        }
-    } while (opcao != 7);
-
-    return 0;
-}

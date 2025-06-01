@@ -7,6 +7,9 @@ private:
     bool needHealthAssist;
 
 public:
+    Sheltered();
+    ~Sheltered();
+    Sheltered(string name, int age,int birthDate[DATES], int gender, string cpf, string getNationality, int bloodType);
     string getResponsible() const { return responsible; }
     void setResponsible(string r) {
         if (getAge() < 18) responsible = r;
