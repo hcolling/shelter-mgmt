@@ -9,38 +9,43 @@ class Sheltered : public Person {
 public:
     Sheltered();
     ~Sheltered();
-    Sheltered(std::string name, int birthDate[DATES], int gender, std::string cpf, std::string nationality, int bloodType);
-    std::string getResponsible();
+    string getResponsible();
     
-
     void requestResources();
     bool isNeedingResources();
     void setNeedResources(bool value);
-    void setResponsible(std::string r);
+    void setResponsible(string r);
 
-    /* AINDA NAO DESENVOLVIDOS */
-    //void requestHealthAssist();
-    //bool isNeedingHealthAssist();
-    //void setNeedHealthAssist(bool value);
+    void requestHealthAssist();
+    bool isNeedingHealthAssist();
+    void setNeedHealthAssist(bool value);
 
 private:
-    std::string responsible;
+    string responsible;
     bool needResources;
     bool needHealthAssist;
 };
+
 Sheltered::Sheltered(){}
 
 Sheltered::~Sheltered(){}
-Sheltered::Sheltered(std::string name, int birthDate[DATES], int gender, std::string cpf, std::string nationality, int bloodType):Person(name, birthDate, gender, cpf, nationality, bloodType){}
 
-std::string Sheltered::getResponsible() { return responsible; }
-void Sheltered::setResponsible(std::string r) {
+string Sheltered::getResponsible() { return responsible; }
+void Sheltered::setResponsible(string r) {
     if (getAge() < 18) responsible = r;
     else responsible = "N/A";
 }
 
 void Sheltered::requestResources() { needResources = true; }
+
 bool Sheltered::isNeedingResources(){ return needResources; }
+
 void Sheltered::setNeedResources(bool value) { needResources = value; }
+
+void Sheltered::requestHealthAssist() { needHealthAssist = true; }
+
+bool Sheltered::isNeedingHealthAssist() {return needHealthAssist;}
+
+void Sheltered::setNeedHealthAssist(bool value){ needHealthAssist = value; }
 
 #endif // SHELTERED_H

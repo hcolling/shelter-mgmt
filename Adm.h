@@ -15,8 +15,8 @@ public:
     void setUsername(string u);
     void setPassword(string p);
 
-    void checkLackResources(Sheltered &s);
-    void checkNeedHealthAssist(Sheltered &s);
+    void checkLackResources(Sheltered *s);
+    void checkNeedHealthAssist(Sheltered *s);
 };
 
 Adm::Adm(){}
@@ -31,10 +31,10 @@ void Adm::setUsername(string u) { if (u.length() <= MAX_USR_SZ) username = u; }
 
 void Adm::setPassword(string p) { if (p.length() <= MAX_PW_SZ) password = p; }
 
-void Adm::checkLackResources(Sheltered &s) {
-    if (s.isNeedingResources()) s.setNeedResources(false);
+void Adm::checkLackResources(Sheltered *s) {
+    if (s->isNeedingResources()) s->setNeedResources(false);
 }
 
-void Adm::checkNeedHealthAssist(Sheltered &s) {
-    if (s.isNeedingHealthAssist()) s.setNeedHealthAssist(false);
+void Adm::checkNeedHealthAssist(Sheltered* s) {
+    if (s->isNeedingHealthAssist()) s->setNeedHealthAssist(false);
 }

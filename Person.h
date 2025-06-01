@@ -21,35 +21,34 @@ enum t_bloodType { O_NEG, O_POS, A_NEG, A_POS, B_NEG, B_POS, AB_NEG, AB_POS, BLO
 
 class Person {
 private:
-    std::string name;
+    string name;
     int age;
     int birthDate[DATES];
     int gender;
-    std::string cpf;
-    std::string nationality;
+    string cpf;
+    string nationality;
     int bloodType;
-    std::string diseases[MAX_DISEASES];
-    std::string allergies[MAX_ALLERGIES];
+    string diseases[MAX_DISEASES];
+    string allergies[MAX_ALLERGIES];
     bool active;
 
 public:
     Person();
     ~Person();
-    Person(std::string name, int birthDate[DATES], int gender, std::string cpf, std::string nationality, int bloodType);
-    std::string getName();
+    string getName();
     int getAge();
     int getGender();
-    std::string getCpf();
-    std::string getNationality();
+    string getCpf();
+    string getNationality();
     int getBloodType();
     bool getActive();
 
-    void setName(std::string n);
+    void setName(string n);
     void setBirthDate(int b[DATES]);
     void bDateToAge();
     void setGender(int g);
-    void setCpf(std::string cpf);
-    void setNationality(std::string n);
+    void setCpf(string cpf);
+    void setNationality(string n);
     void setBloodType(int b);
     void setActive(bool a);
 };
@@ -58,32 +57,21 @@ Person::Person(){}
 
 Person::~Person(){}
 
-Person::Person(std::string name, int birthDate[DATES], int gender, std::string cpf, std::string nationality, int bloodType){
-    this->name = name;
-    for (int i = 0; i < DATES; i++) this->birthDate[i] = birthDate[i];
-    bDateToAge();
-    this->gender = gender;
-    this->cpf = cpf;
-    this->nationality = nationality;
-    this->bloodType = bloodType;
-    this->active = true;
-}
-
-std::string Person::getName() { return name; }
+string Person::getName() { return name; }
 
 int Person::getAge() { const_cast<Person*>(this)->bDateToAge(); return age; }
 
 int Person::getGender() { return gender; }
 
-std::string Person::getCpf() { return cpf; }
+string Person::getCpf() { return cpf; }
 
-std::string Person::getNationality() { return nationality; }
+string Person::getNationality() { return nationality; }
 
 int Person::getBloodType() { return bloodType; }
 
 bool Person::getActive() { return active; }
 
-void Person::setName(std::string n) { if (n.length() <= MAX_NAME_SZ) name = n; }
+void Person::setName(string n) { if (n.length() <= MAX_NAME_SZ) name = n; }
 
 void Person::setBirthDate(int b[DATES]) { for (int i = 0; i < DATES; i++) birthDate[i] = b[i]; }
 
@@ -99,9 +87,9 @@ void Person::bDateToAge() {
 
 void Person::setGender(int g) { if (g >= 0 && g < GENDERS) gender = g; }
 
-void Person::setCpf(std::string cpf) { this->cpf = cpf; }
+void Person::setCpf(string cpf) { this->cpf = cpf; }
 
-void Person::setNationality(std::string n) { nationality = n; }
+void Person::setNationality(string n) { nationality = n; }
 
 void Person::setBloodType(int b) { bloodType = b; }
 

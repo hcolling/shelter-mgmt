@@ -495,6 +495,7 @@ void System::cadastrarNovoAdm() {
 }
 
 void System::cadastrarNovoAbr() {
+    Sheltered s;
     string nome, cpf, nacionalidade, responsavel, tipo;
     int genero, bday[DATES], sangue, ativo;
 
@@ -505,6 +506,7 @@ void System::cadastrarNovoAbr() {
         if (validarNome(nome)) break;
         cout << "Nome invalido! Tente novamente.\n";
     }
+    s.setName(nome);
 
     // CPF
     while (true) {
@@ -513,6 +515,7 @@ void System::cadastrarNovoAbr() {
         if (validarCPF(cpf)) break;
         cout << "CPF invalido! Tente novamente.\n";
     }
+    s.setCpf(cpf);
 
     // Data de nascimento
     while (true) {
@@ -521,7 +524,17 @@ void System::cadastrarNovoAbr() {
         cin.ignore();
         if (validarNascimento(bday)) break;
         cout << "Data invalida! Tente novamente.\n";
-    }\
+    }
+    s.setBirthDate(bday);
+
+        // Responsavel (se menor)
+    if (s.getAge() < 18) {
+        cout << "Responsavel: ";
+        getline(cin, responsavel);
+        s.setResponsible(responsavel);
+    } else {
+        s.setResponsible("N/A");
+    }
 
     // Genero
     while (true) {
@@ -531,10 +544,12 @@ void System::cadastrarNovoAbr() {
         if (validarGenero(genero)) break;
         cout << "Genero invalido! Tente novamente.\n";
     }
+    s.setGender(genero);
 
     // Nacionalidade
     cout << "Nacionalidade: ";
     getline(cin, nacionalidade);
+    s.setNationality(nacionalidade);
 
     // Tipo sanguineo
     while (true) {
@@ -544,22 +559,21 @@ void System::cadastrarNovoAbr() {
         if (sangue != -1) break;
         cout << "Tipo sanguineo invalido! Tente novamente.\n";
     }
+    s.setBloodType(sangue);
 
-    Sheltered s(nome, bday, genero, cpf, nacionalidade, sangue);
-
-    // Responsavel (se menor)
-    if (s.getAge() < 18) {
-        cout << "Responsavel: ";
-        getline(cin, responsavel);
-        s.setResponsible(responsavel);
-    } else {
-        s.setResponsible("N/A");
+    // Ativo
+    while (true) {
+        cout << "Ativo no abrigo? (1=Sim, 0=Ausente): ";
+        cin >> ativo;
+        cin.ignore();
+        if (ativo == 0 || ativo == 1) break;
+        cout << "Entrada invalida! Digite 1 ou 0.\n";
     }
-
+    s.setActive(ativo == 1);
 
     salvarShelteredCSV(&s);
     cout << "Abrigado cadastrado com sucesso!\n";
-}   
+}
 
 void System::exibirCadastrados() {
     int opcao;
