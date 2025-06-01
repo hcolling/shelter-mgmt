@@ -5,6 +5,8 @@
 #include <regex>
 #include "Adm.h"
 
+using namespace std;
+
 class System{
     public:
 
@@ -503,7 +505,6 @@ class System{
     }
 
     void cadastrarNovoAbr() {
-        Sheltered s;
         string nome, cpf, nacionalidade, responsavel, tipo;
         int genero, bday[DATES], sangue, ativo;
 
@@ -514,7 +515,6 @@ class System{
             if (validarNome(nome)) break;
             cout << "Nome invalido! Tente novamente.\n";
         }
-        s.setName(nome);
 
         // CPF
         while (true) {
@@ -523,8 +523,7 @@ class System{
             if (validarCPF(cpf)) break;
             cout << "CPF invalido! Tente novamente.\n";
         }
-        s.setCpf(cpf);
-
+ 
         // Data de nascimento
         while (true) {
             cout << "Data de nascimento (D M A): ";
@@ -532,8 +531,7 @@ class System{
             cin.ignore();
             if (validarNascimento(bday)) break;
             cout << "Data invalida! Tente novamente.\n";
-        }
-        s.setBirthDate(bday);
+        }\
 
         // Genero
         while (true) {
@@ -543,12 +541,21 @@ class System{
             if (validarGenero(genero)) break;
             cout << "Genero invalido! Tente novamente.\n";
         }
-        s.setGender(genero);
 
         // Nacionalidade
         cout << "Nacionalidade: ";
         getline(cin, nacionalidade);
-        s.setNationality(nacionalidade);
+
+        // Tipo sanguineo
+        while (true) {
+            cout << "Tipo sanguineo (ex: O-, AB+): ";
+            getline(cin, tipo);
+            sangue = converterTipoSanguineo(tipo);
+            if (sangue != -1) break;
+            cout << "Tipo sanguineo invalido! Tente novamente.\n";
+        }
+
+        Sheltered s(nome, bday, genero, cpf, nacionalidade, sangue);
 
         // Responsavel (se menor)
         if (s.getAge() < 18) {
@@ -559,25 +566,6 @@ class System{
             s.setResponsible("N/A");
         }
 
-        // Tipo sanguineo
-        while (true) {
-            cout << "Tipo sanguineo (ex: O-, AB+): ";
-            getline(cin, tipo);
-            sangue = converterTipoSanguineo(tipo);
-            if (sangue != -1) break;
-            cout << "Tipo sanguineo invalido! Tente novamente.\n";
-        }
-        s.setBloodType(sangue);
-
-        // Ativo
-        while (true) {
-            cout << "Ativo no abrigo? (1=Sim, 0=Ausente): ";
-            cin >> ativo;
-            cin.ignore();
-            if (ativo == 0 || ativo == 1) break;
-            cout << "Entrada invalida! Digite 1 ou 0.\n";
-        }
-        s.setActive(ativo == 1);
 
         salvarShelteredCSV(s);
         cout << "Abrigado cadastrado com sucesso!\n";

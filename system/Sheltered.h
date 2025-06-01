@@ -1,26 +1,41 @@
+#ifndef SHELTERED_H
+#define SHELTERED_H
 #include "Person.h"
+#include <string>
 
 class Sheltered : public Person {
 private:
-    string responsible;
+    std::string responsible;
     bool needResources;
     bool needHealthAssist;
 
-public:
     Sheltered();
     ~Sheltered();
-    Sheltered(string name, int age,int birthDate[DATES], int gender, string cpf, string getNationality, int bloodType);
-    string getResponsible() const { return responsible; }
-    void setResponsible(string r) {
-        if (getAge() < 18) responsible = r;
-        else responsible = "N/A";
-    }
+    Sheltered(std::string name, int birthDate[DATES], int gender, std::string cpf, std::string nationality, int bloodType);
+    std::string getResponsible();
+    void setResponsible(std::string r);
 
-    void requestResources() { needResources = true; }
-    bool isNeedingResources() const { return needResources; }
-    void setNeedResources(bool value) { needResources = value; }
+    void requestResources();
+    bool isNeedingResources();
+    void setNeedResources(bool value);
 
-    void requestHealthAssist() { needHealthAssist = true; }
-    bool isNeedingHealthAssist() const { return needHealthAssist; }
-    void setNeedHealthAssist(bool value) { needHealthAssist = value; }
+    void requestHealthAssist();
+    bool isNeedingHealthAssist();
+    void setNeedHealthAssist(bool value);
 };
+Sheltered::Sheltered(){}
+
+Sheltered::~Sheltered(){}
+Sheltered::Sheltered(std::string name, int birthDate[DATES], int gender, std::string cpf, std::string nationality, int bloodType):Person(name, birthDate, gender, cpf, nationality, bloodType){}
+
+std::string Sheltered::getResponsible() { return responsible; }
+void Sheltered::setResponsible(std::string r) {
+    if (getAge() < 18) responsible = r;
+    else responsible = "N/A";
+}
+
+void Sheltered::requestResources() { needResources = true; }
+bool Sheltered::isNeedingResources(){ return needResources; }
+void Sheltered::setNeedResources(bool value) { needResources = value; }
+
+#endif // SHELTERED_H
