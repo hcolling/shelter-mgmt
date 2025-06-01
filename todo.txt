@@ -1,0 +1,16 @@
+TO-DO LIST:
+
+Critical:
+- Edição e exclusão de cadastros funcionam, mas resultam em erros nos cadastros do respectivo arquivo (alteração de valores, etc).
+- Flags de necessidade de Recursos ou Assistência Médica ainda não estão implementadas:
+	→ Possível abordagem é adicinar elas nos cadastros como 0 por padrão. Fora do sistema, se houver tal necessidade, o abrigado
+	  chama o administrador, que vai entrar no sistema, e editar o cadastro do abrigado, setando a respectiva flag em 1.
+- 
+
+
+Minor/Detail:
+- Existem funções (cadastro, por exemplo) que são duplicadas (uma para adm e outra para abrigado). Vale a pena modificá-las para
+  se tornarem funções únicas (como edição e exclusão).
+- No menu, escolher a busca vai indicar Adm como 1 e Abrigado como 2, diferentemente da edição e exclusão, que Adm é 2 e Abrigado
+  1. Vale a pena editar isso para manter um padrão, tornando o sistema mais user-friendly.
+- 
