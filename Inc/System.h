@@ -454,10 +454,22 @@ void System::exibirCSV(const string& caminho) {
     ifstream file(caminho);
     string linha;
     if (!file) {
-        cout << "Arquivo nao encontrado.\n";
+        cout << "Nenhum cadastro encontrado.\n";
         return;
     }
-    while (getline(file, linha)) cout << linha << endl;
+    bool temConteudo = false;
+    while (getline(file, linha)) {
+        // Ignora linhas vazias ou só com espaços/tabs
+        string temp = linha;
+        temp.erase(remove_if(temp.begin(), temp.end(), ::isspace), temp.end());
+        if (!temp.empty()) {
+            cout << linha << endl;
+            temConteudo = true;
+        }
+    }
+    if (!temConteudo) {
+        cout << "Nenhum cadastro encontrado.\n";
+    }
     file.close();
 }
 
