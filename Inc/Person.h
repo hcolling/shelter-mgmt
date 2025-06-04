@@ -12,8 +12,8 @@ using namespace std;
 #define MAX_PW_SZ       20
 #define MAX_DISEASES    100
 #define MAX_ALLERGIES   100
-#define ADM_RGSTR_FILE  "./register/adm.txt"
-#define RGSTR_FILE      "./register/shelter.txt"
+#define ADM_RGSTR_FILE  "adm.txt"
+#define RGSTR_FILE      "shelter.txt"
 
 enum t_gender { MALE, FEMALE, GENDERS };
 enum t_bday { DAY, MONTH, YEAR, DATES };
@@ -58,8 +58,8 @@ Person::Person(){
     age = 0;
     for (int i = 0; i < DATES; i++) birthDate[i] = 0;
     gender = 0;
-    cpf;
-    nationality;
+    cpf  =  "000.000.000-00";
+    nationality = "unkown";
     bloodType = 0;
     for (int i = 0; i < MAX_DISEASES; i++) diseases[i] = '\0';
     for (int i = 0; i < MAX_ALLERGIES; i++) allergies[i] = '\0';

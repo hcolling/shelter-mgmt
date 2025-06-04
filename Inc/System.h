@@ -115,6 +115,8 @@ bool System::stringMatch(const string& a, const string& b) {
 
 void System::salvarAdmCSV(Adm& adm) {
     ofstream file(ADM_RGSTR_FILE, ios::app);
+    if(!file.is_open())
+        file.open (ADM_RGSTR_FILE);
     file << adm.getName() << ","
         << adm.getCpf() << ","
         << adm.getAge() << ","
@@ -129,6 +131,8 @@ void System::salvarAdmCSV(Adm& adm) {
 
 void System::salvarShelteredCSV(Sheltered& s) {
     ofstream file(RGSTR_FILE, ios::app);
+    if(!file.is_open())
+        file.open (RGSTR_FILE);
     file << s.getName() << ","
         << s.getCpf() << ","
         << s.getAge() << ","
@@ -153,7 +157,7 @@ vector<Adm> System::carregarAdmsCSV() {
 
         Adm adm;
         adm.setName(nome); adm.setCpf(cpf);
-        adm.setGender(stoi(generoStr));
+        adm.setGender(generoStr == "M" ? 0 : 1);
         adm.setNationality(nacionalidade);
         adm.setBloodType(converterTipoSanguineo(btStr));
         adm.setUsername(usuario); adm.setPassword(senha);
@@ -640,11 +644,11 @@ void System::exibirCadastrados() {
 void System::menuBusca() {
     int tipo;
     cout << "\n== Buscar cadastros ==\n";
-    cout << "1. Buscar Administrador\n";
-    cout << "2. Buscar Abrigado\n> ";
+    cout << "1. Buscar Abrigado\n";
+    cout << "2. Buscar Administrador\n> ";
     cin >> tipo; cin.ignore();
 
-    if (tipo == 1) {
+    if (tipo == 2) {
         vector<Adm> adms = carregarAdmsCSV();
         int op;
         cout << "Buscar ADM por:\n1. Nome\n2. CPF\n> ";
@@ -657,7 +661,7 @@ void System::menuBusca() {
             cout << "CPF: "; getline(cin, entrada);
             buscarAdmPorCpf(adms, entrada);
         }
-    } else if (tipo == 2) {
+    } else if (tipo == 1) {
         vector<Sheltered> abr = carregarShelteredCSV();
         int op;
         cout << "Buscar Abrigado por:\n1. Nome\n2. CPF\n3. Necessidade de recurso\n4. Necessidade de assistencia medica\n> ";
