@@ -578,6 +578,7 @@ void System::cadastrarNovoAdm() {
     while (true) {
         cout << "Tipo sanguineo (ex: O-, AB+): ";
         getline(cin, tipo);
+        transform(tipo.begin(), tipo.end(), tipo.begin(), ::toupper);
         sangue = converterTipoSanguineo(tipo);
         if (sangue != -1) break;
         cout << "Tipo sanguineo invalido! Tente novamente.\n";
@@ -659,6 +660,7 @@ void System::cadastrarNovoAbr() {
     while (true) {
         cout << "Tipo sanguineo (ex: O-, AB+): ";
         getline(cin, tipo);
+        transform(tipo.begin(), tipo.end(), tipo.begin(), ::toupper);
         sangue = converterTipoSanguineo(tipo);
         if (sangue != -1) break;
         cout << "Tipo sanguineo invalido! Tente novamente.\n";
