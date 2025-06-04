@@ -140,7 +140,9 @@ void System::salvarShelteredCSV(Sheltered& s) {
         << (s.getGender() == 0 ? "M" : "F") << ","
         << s.getNationality() << ","
         << tipoSanguineoParaTexto(s.getBloodType()) << ","
-        << s.getActive() << endl;
+        << s.getActive() << ","
+        << s.isNeedingResources() << ","
+        << s.isNeedingHealthAssist() << endl;
     file.close();
 }
 
@@ -174,10 +176,12 @@ vector<Sheltered> System::carregarShelteredCSV() {
     while (getline(file, linha)) {
         stringstream ss(linha);
         string nome, cpf, idadeStr, generoStr, nacionalidade, responsavel, btStr, activeStr;
+        string recursosStr, saudeStr;
 
         getline(ss, nome, ','); getline(ss, cpf, ','); getline(ss, idadeStr, ',');
         getline(ss, responsavel, ','); getline(ss, generoStr, ','); getline(ss, nacionalidade, ',');
         getline(ss, btStr, ','); getline(ss, activeStr, ',');
+        getline(ss, recursosStr, ','); getline(ss, saudeStr, ',');
 
         Sheltered s;
         s.setName(nome); s.setCpf(cpf);
@@ -186,6 +190,8 @@ vector<Sheltered> System::carregarShelteredCSV() {
         s.setNationality(nacionalidade);
         s.setBloodType(converterTipoSanguineo(btStr));
         s.setActive(stoi(activeStr) == 1);
+        s.setNeedResources(stoi(recursosStr) == 1);
+        s.setNeedHealthAssist(stoi(saudeStr) == 1);
         lista.push_back(s);
     }
     return lista;
@@ -374,6 +380,35 @@ void System::editarCadastro(bool isAdm) {
                     }
                     s.setActive(ativo == 1);
                 }
+
+                // Editar necessidade de recursos
+                cout << "Editar necessidade de recursos (" << (s.isNeedingResources() ? "1" : "0") << ")? [s/n]: ";
+                getline(cin, entrada);
+                if (entrada == "s") {
+                    int r;
+                    while (true) {
+                        cout << "Nova necessidade de recursos (1=Sim, 0=Nao): ";
+                        cin >> r; cin.ignore();
+                        if (r == 0 || r == 1) break;
+                        cout << "Entrada invalida! Digite 1 ou 0.\n";
+                    }
+                    s.setNeedResources(r == 1);
+                }
+
+                // Editar necessidade de assistencia medica
+                cout << "Editar necessidade de assistencia medica (" << (s.isNeedingHealthAssist() ? "1" : "0") << ")? [s/n]: ";
+                getline(cin, entrada);
+                if (entrada == "s") {
+                    int m;
+                    while (true) {
+                        cout << "Nova necessidade de assistencia medica (1=Sim, 0=Nao): ";
+                        cin >> m; cin.ignore();
+                        if (m == 0 || m == 1) break;
+                        cout << "Entrada invalida! Digite 1 ou 0.\n";
+                    }
+                    s.setNeedHealthAssist(m == 1);
+                }
+
                 break;
             }
         }
@@ -566,7 +601,7 @@ void System::cadastrarNovoAdm() {
 void System::cadastrarNovoAbr() {
     Sheltered s;
     string nome, cpf, nacionalidade, responsavel, tipo;
-    int genero, bday[DATES], sangue, ativo;
+    int genero, bday[DATES], sangue, ativo, recursos, saude;
 
     // Nome
     while (true) {
@@ -639,6 +674,25 @@ void System::cadastrarNovoAbr() {
         cout << "Entrada invalida! Digite 1 ou 0.\n";
     }
     s.setActive(ativo == 1);
+
+    // Necessita recursos
+    while (true) {
+        cout << "Precisa de recursos? (1=Sim, 0=Não): ";
+        cin >> recursos;
+        if (recursos == 0 || recursos == 1) break;
+        cout << "Entrada inválida.\n";
+    }
+    s.setNeedResources(recursos == 1);
+
+    // Necessita assistência
+    while (true) {
+        cout << "Precisa de assistência médica? (1=Sim, 0=Não): ";
+        cin >> saude;
+        if (saude == 0 || saude == 1) break;
+        cout << "Entrada inválida.\n";
+    }
+    s.setNeedHealthAssist(saude == 1);
+    cin.ignore();
 
     salvarShelteredCSV(s);
     cout << "Abrigado cadastrado com sucesso!\n";
