@@ -1,0 +1,10 @@
+João Silva,111.111.111-11,14,Maria Silva,M,Brasileira,A+,1,1,0
+Maria Oliveira,222.222.222-22,21,N/A,F,Brasileira,O-,1,0,0
+Carlos Souza,333.333.333-33,18,N/A,M,Brasileiro,B+,1,1,1
+Ana Lima,444.444.444-44,35,N/A,F,Brasileira,AB-,0,0,1
+Lucas Costa,555.555.555-55,8,Juliana Costa,M,Brasileiro,A-,1,1,1
+Paula Martins,666.666.666-66,45,N/A,F,Brasileira,O+,1,0,0
+Rafael Dias,777.777.777-77,29,N/A,M,Brasileiro,B-,1,0,1
+Fernanda Rocha,888.888.888-88,17,João Rocha,F,Brasileira,A+,1,1,1
+Tiago Alves,999.999.999-99,31,N/A,M,Brasileiro,AB+,1,0,0
+Larissa Moura,000.000.000-00,23,N/A,F,Brasileira,O-,0,1,0

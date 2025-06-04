@@ -1,0 +1,5 @@
+Alice Souza,123.456.789-00,32,F,Brasileira,A+,alice_admin,senha123,1
+Bruno Lima,987.654.321-11,41,M,Brasileiro,B-,bruno_l,segredo,1
+Carla Dias,321.654.987-22,28,F,Brasileira,O-,carla_d,1234,0
+Daniel Rocha,111.222.333-44,35,M,Brasileiro,AB+,dan_rocha,abc123,1
+Eva Martins,555.666.777-88,30,F,Brasileira,A-,eva.m,senha,1
