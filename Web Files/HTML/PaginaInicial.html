@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="../CSS/style.css" />
+  <title>Gestão de Abrigos Painel</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body style="min-height: 100vh;background-color: #f1f8e9;">
+  <aside class="sidebar">
+    <h2>Menu</h2>
+    <a href="CadastroAbrigado.html">Cadastrar Abrigado</a>
+    <a href="#" onclick="alert('Não implementado ainda');">Acessar Lista de Abrigado</a>
+    <a href="#" onclick="alert('Não implementado ainda');">Buscar Informações de Abrigados</a>
+    <a href="#" onclick="alert('Não implementado ainda');">Agendar Consultas</a>
+    <a href="#" onclick="alert('Não implementado ainda');">Consultar Histórico Médico</a>
+  </aside>
+
+  <main class="main">
+    <h1>Bem-vindo ao Painel de Informações</h1>
+
+    <section class="dashboard">
+      <div class="card">
+        <h3>Pessoas abrigadas hoje</h3>
+        <p style="font-size: 2rem; color: #2e7d32;">27</p>
+      </div>
+      <div class="card">
+        <h3>Vagas disponíveis</h3>
+        <p style="font-size: 2rem; color: #c62828;">13</p>
+      </div>
+      <div class="card">
+        <h3>Taxa de ocupação</h3>
+        <canvas id="ocupacaoChart"></canvas>
+      </div>
+    </section>
+
+    <section class="avisos">
+      <h2>Central de Avisos</h2>
+      <ul>
+        <li>08:00 - Consulta médica: João da Silva</li>
+        <li>10:30 - Reunião com assistente social</li>
+        <li>14:00 - Entrevista para novo abrigado</li>
+        <li>16:00 - Consulta psicológica: Maria Souza</li>
+      </ul>
+    </section>
+  </main>
+
+  <script>
+    const ctx = document.getElementById('ocupacaoChart');
+    new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: ['Ocupado', 'Disponível'],
+        datasets: [{
+          label: 'Ocupacao',
+          data: [27, 13],
+          backgroundColor: ['#66bb6a', '#c8e6c9'],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
