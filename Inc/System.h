@@ -115,34 +115,30 @@ bool System::stringMatch(const string& a, const string& b) {
 
 void System::salvarAdmCSV(Adm& adm) {
     ofstream file(ADM_RGSTR_FILE, ios::app);
-    if(!file.is_open())
-        file.open (ADM_RGSTR_FILE);
     file << adm.getName() << ","
-        << adm.getCpf() << ","
-        << adm.getAge() << ","
-        << (adm.getGender() == 0 ? "M" : "F") << ","
-        << adm.getNationality() << ","
-        << tipoSanguineoParaTexto(adm.getBloodType()) << ","
-        << adm.getUsername() << ","
-        << adm.getPassword() << ","
-        << adm.getActive() << endl;
+         << adm.getCpf() << ","
+         << adm.getAge() << ","
+         << (adm.getGender() == 0 ? "M" : "F") << ","
+         << adm.getNationality() << ","
+         << tipoSanguineoParaTexto(adm.getBloodType()) << ","
+         << adm.getActive() << ","
+         << adm.getUsername() << ","
+         << adm.getPassword() << endl;
     file.close();
 }
 
 void System::salvarShelteredCSV(Sheltered& s) {
     ofstream file(RGSTR_FILE, ios::app);
-    if(!file.is_open())
-        file.open (RGSTR_FILE);
     file << s.getName() << ","
-        << s.getCpf() << ","
-        << s.getAge() << ","
-        << s.getResponsible() << ","
-        << (s.getGender() == 0 ? "M" : "F") << ","
-        << s.getNationality() << ","
-        << tipoSanguineoParaTexto(s.getBloodType()) << ","
-        << s.getActive() << ","
-        << s.isNeedingResources() << ","
-        << s.isNeedingHealthAssist() << endl;
+         << s.getCpf() << ","
+         << s.getAge() << ","
+         << (s.getGender() == 0 ? "M" : "F") << ","
+         << s.getNationality() << ","
+         << s.getResponsible() << ","
+         << tipoSanguineoParaTexto(s.getBloodType()) << ","
+         << s.getActive() << ","
+         << s.isNeedingResources() << ","
+         << s.isNeedingHealthAssist() << endl;
     file.close();
 }
 
@@ -150,20 +146,31 @@ vector<Adm> System::carregarAdmsCSV() {
     vector<Adm> lista;
     ifstream file(ADM_RGSTR_FILE);
     string linha;
+
     while (getline(file, linha)) {
         stringstream ss(linha);
-        string nome, cpf, usuario, senha, generoStr, nacionalidade, btStr, activeStr, idadeStr;
-        getline(ss, nome, ','); getline(ss, cpf, ','); getline(ss, idadeStr, ',');
-        getline(ss, generoStr, ','); getline(ss, nacionalidade, ','); getline(ss, btStr, ',');
-        getline(ss, usuario, ','); getline(ss, senha, ','); getline(ss, activeStr, ','); 
+        string nome, cpf, idadeStr, generoStr, nacionalidade, btStr, ativoStr, usuario, senha;
+
+        getline(ss, nome, ',');
+        getline(ss, cpf, ',');
+        getline(ss, idadeStr, ',');
+        getline(ss, generoStr, ',');
+        getline(ss, nacionalidade, ',');
+        getline(ss, btStr, ',');
+        getline(ss, ativoStr, ',');
+        getline(ss, usuario, ',');
+        getline(ss, senha, ',');
 
         Adm adm;
-        adm.setName(nome); adm.setCpf(cpf);
+        adm.setName(nome);
+        adm.setCpf(cpf);
         adm.setGender(generoStr == "M" ? 0 : 1);
         adm.setNationality(nacionalidade);
         adm.setBloodType(converterTipoSanguineo(btStr));
-        adm.setUsername(usuario); adm.setPassword(senha);
-        adm.setActive(stoi(activeStr) == 1);
+        adm.setActive(stoi(ativoStr) == 1);
+        adm.setUsername(usuario);
+        adm.setPassword(senha);
+
         lista.push_back(adm);
     }
     return lista;
@@ -173,25 +180,34 @@ vector<Sheltered> System::carregarShelteredCSV() {
     vector<Sheltered> lista;
     ifstream file(RGSTR_FILE);
     string linha;
+
     while (getline(file, linha)) {
         stringstream ss(linha);
-        string nome, cpf, idadeStr, generoStr, nacionalidade, responsavel, btStr, activeStr;
-        string recursosStr, saudeStr;
+        string nome, cpf, idadeStr, generoStr, nacionalidade, responsavel;
+        string btStr, ativoStr, recursosStr, saudeStr;
 
-        getline(ss, nome, ','); getline(ss, cpf, ','); getline(ss, idadeStr, ',');
-        getline(ss, responsavel, ','); getline(ss, generoStr, ','); getline(ss, nacionalidade, ',');
-        getline(ss, btStr, ','); getline(ss, activeStr, ',');
-        getline(ss, recursosStr, ','); getline(ss, saudeStr, ',');
+        getline(ss, nome, ',');
+        getline(ss, cpf, ',');
+        getline(ss, idadeStr, ',');
+        getline(ss, generoStr, ',');
+        getline(ss, nacionalidade, ',');
+        getline(ss, responsavel, ',');
+        getline(ss, btStr, ',');
+        getline(ss, ativoStr, ',');
+        getline(ss, recursosStr, ',');
+        getline(ss, saudeStr, ',');
 
         Sheltered s;
-        s.setName(nome); s.setCpf(cpf);
-        s.setResponsible(responsavel);
+        s.setName(nome);
+        s.setCpf(cpf);
         s.setGender(generoStr == "M" ? 0 : 1);
         s.setNationality(nacionalidade);
+        s.setResponsible(responsavel);
         s.setBloodType(converterTipoSanguineo(btStr));
-        s.setActive(stoi(activeStr) == 1);
+        s.setActive(stoi(ativoStr) == 1);
         s.setNeedResources(stoi(recursosStr) == 1);
         s.setNeedHealthAssist(stoi(saudeStr) == 1);
+
         lista.push_back(s);
     }
     return lista;
@@ -337,11 +353,10 @@ void System::editarCadastro(bool isAdm) {
         else {
             ofstream file(ADM_RGSTR_FILE);
             for (auto adm : lista) {
-                file << adm.getName() << "," << adm.getCpf() << ","
-                    << adm.getUsername() << "," << adm.getPassword() << ","
-                    << adm.getGender() << "," << adm.getNationality() << ","
-                    << tipoSanguineoParaTexto(adm.getBloodType()) << ","
-                    << adm.getActive() << "," << adm.getAge() << endl;
+                file << adm.getName() << "," << adm.getCpf() << "," << adm.getAge() << ","
+                    << (adm.getGender() == 0 ? "M" : "F") << "," << adm.getNationality() << ","
+                    << tipoSanguineoParaTexto(adm.getBloodType()) << "," << adm.getActive() << ","
+                    << adm.getUsername() << "," << adm.getPassword() << endl;
             }
             file.close();
             cout << "Cadastro atualizado com sucesso.\n";
@@ -416,11 +431,10 @@ void System::editarCadastro(bool isAdm) {
         else {
             ofstream file(RGSTR_FILE);
             for (auto s : lista) {
-                file << s.getName() << "," << s.getCpf() << ","
-                    << s.getAge() << "," << (s.getGender() == 0 ? "M" : "F") << ","
-                    << s.getNationality() << "," << s.getResponsible() << ","
-                    << tipoSanguineoParaTexto(s.getBloodType()) << ","
-                    << s.getActive() << endl;
+                file << s.getName() << "," << s.getCpf() << "," << s.getAge() << ","
+                    << (s.getGender() == 0 ? "M" : "F") << "," << s.getNationality() << ","
+                    << s.getResponsible() << "," << tipoSanguineoParaTexto(s.getBloodType()) << ","
+                    << s.getActive() << "," << s.isNeedingResources() << "," << s.isNeedingHealthAssist() << endl;
             }
             file.close();
             cout << "Cadastro atualizado com sucesso.\n";
@@ -448,11 +462,10 @@ void System::excluirCadastro(bool isAdm) {
         else {
             ofstream file(ADM_RGSTR_FILE);
             for (auto adm : novaLista) {
-                file << adm.getName() << "," << adm.getCpf() << ","
-                    << adm.getUsername() << "," << adm.getPassword() << ","
-                    << adm.getGender() << "," << adm.getNationality() << ","
-                    << tipoSanguineoParaTexto(adm.getBloodType()) << ","
-                    << adm.getActive() << "," << adm.getAge() << endl;
+                file << adm.getName() << "," << adm.getCpf() << "," << adm.getAge() << ","
+                    << (adm.getGender() == 0 ? "M" : "F") << "," << adm.getNationality() << ","
+                    << tipoSanguineoParaTexto(adm.getBloodType()) << "," << adm.getActive() << ","
+                    << adm.getUsername() << "," << adm.getPassword() << endl;
             }
             file.close();
             cout << "Cadastro excluido com sucesso.\n";
@@ -473,11 +486,10 @@ void System::excluirCadastro(bool isAdm) {
         else {
             ofstream file(RGSTR_FILE);
             for (auto s : novaLista) {
-                file << s.getName() << "," << s.getCpf() << ","
-                    << s.getAge() << "," << (s.getGender() == 0 ? "M" : "F") << ","
-                    << s.getNationality() << "," << s.getResponsible() << ","
-                    << tipoSanguineoParaTexto(s.getBloodType()) << ","
-                    << s.getActive() << endl;
+                file << s.getName() << "," << s.getCpf() << "," << s.getAge() << ","
+                    << (s.getGender() == 0 ? "M" : "F") << "," << s.getNationality() << ","
+                    << s.getResponsible() << "," << tipoSanguineoParaTexto(s.getBloodType()) << ","
+                    << s.getActive() << "," << s.isNeedingResources() << "," << s.isNeedingHealthAssist() << endl;
             }
             file.close();
             cout << "Cadastro excluido com sucesso.\n";
